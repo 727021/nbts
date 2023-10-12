@@ -5,6 +5,7 @@
   "keywords": ["nbt", "nbts", "minecraft"],
   "main": "dist/index.js",
   "files": ["dist/**/*"],
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
