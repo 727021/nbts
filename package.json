@@ -1,0 +1,27 @@
+{
+  "name": "@mcstatic/nbts",
+  "version": "0.0.0",
+  "description": "A typescript library for working with NBT files",
+  "keywords": ["nbt", "nbts", "minecraft"],
+  "main": "dist/index.js",
+  "files": ["dist/**/*"],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "publish": "npm publish --access public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/727021/nbts.git"
+  },
+  "author": "Andrew Schimelpfening (https://github.com/727021)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/727021/nbts/issues"
+  },
+  "homepage": "https://github.com/727021/nbts#readme",
+  "devDependencies": {
+    "@types/node": "^20.8.4",
+    "typescript": "^5.2.2"
+  }
+}
