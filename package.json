@@ -2,13 +2,20 @@
   "name": "@mcstatic/nbts",
   "version": "0.0.0",
   "description": "A typescript library for working with NBT files",
-  "keywords": ["nbt", "nbts", "minecraft"],
+  "keywords": [
+    "nbt",
+    "nbts",
+    "minecraft"
+  ],
   "main": "dist/index.js",
-  "files": ["dist/**/*"],
+  "files": [
+    "dist/**/*"
+  ],
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
+    "postbuild": "fix-esm-import-path dist",
     "publish": "npm publish --access public"
   },
   "repository": {
@@ -23,6 +30,7 @@
   "homepage": "https://github.com/727021/nbts#readme",
   "devDependencies": {
     "@types/node": "^20.8.4",
+    "fix-esm-import-path": "^1.4.0",
     "typescript": "^5.2.2"
   }
 }

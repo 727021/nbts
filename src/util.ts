@@ -16,7 +16,7 @@ export enum TagType {
     LONG_ARRAY
 }
 
-export const tagTypeName = (type: TagType) => Object.entries(TagType).find(([k, v]) => v === type)?.[0] ?? 'unknown'
+export const tagTypeName = (type: TagType) => Object.entries(TagType).find(([k, v]) => v === type)?.[0]
 
 export type Tag<T = unknown> = { type: TagType, value: T, name?: string }
 export type TagFunction<T = unknown> = (value: T, name?: string) => Tag<T>

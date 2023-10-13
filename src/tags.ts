@@ -1,7 +1,4 @@
-import { Tag, TagFunction, TagType, validateTag } from './util'
-
-// TODO: Don't validate everything on create?
-// it messes things up with always needing a name except for children of a list tag
+import { Tag, TagFunction, TagType } from './util'
 
 export const byte: TagFunction<number> = (value, name) => {
     const tag = {
@@ -9,7 +6,6 @@ export const byte: TagFunction<number> = (value, name) => {
         value,
         name
     }
-    validateTag(tag)
     return tag
 }
 
@@ -19,7 +15,6 @@ export const short: TagFunction<number> = (value, name) => {
         value,
         name
     }
-    validateTag(tag)
     return tag
 }
 
@@ -29,7 +24,6 @@ export const int: TagFunction<number> = (value, name) => {
         value,
         name
     }
-    validateTag(tag)
     return tag
 }
 
@@ -39,7 +33,6 @@ export const long: TagFunction<bigint> = (value, name) => {
         value,
         name
     }
-    validateTag(tag)
     return tag
 }
 
@@ -49,7 +42,6 @@ export const float: TagFunction<number> = (value, name) => {
         value,
         name
     }
-    validateTag(tag)
     return tag
 }
 
@@ -59,7 +51,6 @@ export const double: TagFunction<number> = (value, name) => {
         value,
         name
     }
-    validateTag(tag)
     return tag
 }
 
@@ -69,7 +60,6 @@ export const byteArray: TagFunction<Buffer> = (value, name) => {
         value: Buffer.copyBytesFrom(value),
         name
     }
-    validateTag(tag)
     return tag
 }
 
@@ -79,7 +69,6 @@ export const string: TagFunction<string> = (value, name) => {
         value,
         name
     }
-    validateTag(tag)
     return tag
 }
 
@@ -89,7 +78,6 @@ export const list: TagFunction<Tag[]> = (value, name) => {
         value,
         name
     }
-    validateTag(tag)
     return tag
 }
 
@@ -99,7 +87,6 @@ export const compound: TagFunction<Tag[]> = (value, name) => {
         value,
         name
     }
-    validateTag(tag)
     return tag
 }
 
@@ -109,7 +96,6 @@ export const intArray: TagFunction<number[]> = (value, name) => {
         value,
         name
     }
-    validateTag(tag)
     return tag
 }
 
@@ -119,6 +105,5 @@ export const longArray: TagFunction<bigint[]> = (value, name) => {
         value,
         name
     }
-    validateTag(tag)
     return tag
 }

@@ -1,4 +1,9 @@
+import { gzip as _gzip, gzipSync } from 'node:zlib'
+import { promisify } from 'node:util'
 import { Tag, TagType, tagTypeName, validateTag } from './util'
+import { writeFileSync } from 'node:fs'
+import { writeFile } from 'node:fs/promises'
+const gzip = promisify(_gzip)
 
 export const toBytes = (tag: Tag): Buffer => {
     // TODO
@@ -27,7 +32,7 @@ export const toString = (tag: Tag, level = 0): string => {
             ? "''"
             : 'None'
     const indent = new Array(level).fill('\t').join('')
-    switch(type) {
+    switch (type) {
         case TagType.BYTE:
             return `${indent}TAG_Byte(${name}): ${value}`
         case TagType.SHORT:
@@ -45,19 +50,29 @@ export const toString = (tag: Tag, level = 0): string => {
         case TagType.LIST: {
             const val = value as Tag[]
             const entries = `${val.length} ${val.length === 1 ? 'entry' : 'entries'}`
-            const listName = `${name.replace(/'$/, '')} (${tagTypeName(val[0]?.type)})${tag.name === undefined ? '' : "'"}`
-            return `${indent}TAG_List(${listName}): ${entries}`
-                + `\n${indent}{`
-                + `\n${val.map(t => toString(t, level + 1)).join('\n')}`
-                + `\n${indent}}`
+            const listName = `${name.replace(/'$/, '')} (${tagTypeName(val[0]?.type) ?? 'empty'})${tag.name === undefined ? '' : "'"}`
+            let str = `${indent}TAG_List(${listName}): ${entries}`
+            if (val.length > 0) {
+                str += `\n${indent}{`
+                    + `\n${val.map(t => toString(t, level + 1)).join('\n')}`
+                    + `\n${indent}}`
+            } else {
+                str += ' {}'
+            }
+            return str
         }
         case TagType.COMPOUND: {
             const val = value as Tag[]
             const entries = `${val.length} ${val.length === 1 ? 'entry' : 'entries'}`
-            return `${indent}TAG_Compound(${name}): ${entries}`
-                + `\n${indent}{`
-                + `\n${val.map(t => toString(t, level + 1)).join('\n')}`
-                + `\n${indent}}`
+            let str = `${indent}TAG_Compound(${name}): ${entries}`
+            if (val.length > 0) {
+                str += `\n${indent}{`
+                    + `\n${val.map(t => toString(t, level + 1)).join('\n')}`
+                    + `\n${indent}}`
+            } else {
+                str += ' {}'
+            }
+            return str
         }
         case TagType.INT_ARRAY:
             return `${indent}TAG_Int_Array(${name}): [${(value as number[]).join(', ')}]`
@@ -74,18 +89,61 @@ export const jsonReplacer = (key: string, value: any) => {
 
 type NBTWriteOptions = {
     filename: string
-    format: 'nbt' | 'gz' | 'nbts' | 'json'
+    format?: 'nbt' | 'nbts' | 'json'
+    compress?: boolean
 }
+
+const checkExtension = (filename: string, extension: string) => filename.endsWith(extension) ? filename : `${filename}.${extension}`
 
 export const write = async (root: Tag, {
     filename,
-    format
+    format = 'nbt',
+    compress = true
 }: NBTWriteOptions) => {
     if (root.type !== TagType.COMPOUND) {
         throw new Error()
     }
     validateTag(root)
+    let nbt
+    switch (format) {
+        case 'nbt':
+            nbt = toBytes(root)
+            if (compress) {
+                nbt = await gzip(nbt)
+            }
+            break
+        case 'nbts':
+            nbt = toString(root)
+            break
+        case 'json':
+            nbt = JSON.stringify(root, jsonReplacer, 4)
+            break
+    }
+    await writeFile(checkExtension(filename, format), nbt)
 }
-export const writeSync = (root: Tag) => {
-    // TODO
+export const writeSync = (root: Tag, {
+    filename,
+    format = 'nbt',
+    compress = true
+}: NBTWriteOptions) => {
+    if (root.type !== TagType.COMPOUND) {
+        throw new Error()
+    }
+    validateTag(root)
+    let nbt
+    switch (format) {
+        case 'nbt':
+            nbt = toBytes(root)
+            if (compress) {
+                nbt = gzipSync(nbt)
+            }
+            break
+        case 'nbts':
+            nbt = toString(root)
+            break
+        case 'json':
+            nbt = JSON.stringify(root, jsonReplacer, 4)
+            break
+    }
+    writeFileSync(checkExtension(filename, format), nbt)
 }
