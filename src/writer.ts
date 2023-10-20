@@ -14,7 +14,7 @@ export const toBytes = (tag: Tag): Buffer => {
  * ```text
  * TAG_Compound(''): 4 entries
  * {
- *   TAG_List('tag name (int)'): 1 entry
+ *   TAG_List('tag name'): 1 entry
  *   {
  *     TAG_Int(None): 5
  *   }
@@ -50,8 +50,7 @@ export const toString = (tag: Tag, level = 0): string => {
         case TagType.LIST: {
             const val = value as Tag[]
             const entries = `${val.length} ${val.length === 1 ? 'entry' : 'entries'}`
-            const listName = `${name.replace(/'$/, '')} (${tagTypeName(val[0]?.type) ?? 'empty'})${tag.name === undefined ? '' : "'"}`
-            let str = `${indent}TAG_List(${listName}): ${entries}`
+            let str = `${indent}TAG_List(${name}): ${entries}`
             if (val.length > 0) {
                 str += `\n${indent}{`
                     + `\n${val.map(t => toString(t, level + 1)).join('\n')}`
