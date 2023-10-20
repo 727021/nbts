@@ -89,7 +89,7 @@ export const jsonReplacer = (key: string, value: any) => {
 
 type NBTWriteOptions = {
     filename: string
-    format?: 'nbt' | 'nbts' | 'json'
+    format?: 'nbt' | 'snbt' | 'json'
     compress?: boolean
 }
 
@@ -112,7 +112,7 @@ export const write = async (root: Tag, {
                 nbt = await gzip(nbt)
             }
             break
-        case 'nbts':
+        case 'snbt':
             nbt = toString(root)
             break
         case 'json':
@@ -138,7 +138,7 @@ export const writeSync = (root: Tag, {
                 nbt = gzipSync(nbt)
             }
             break
-        case 'nbts':
+        case 'snbt':
             nbt = toString(root)
             break
         case 'json':

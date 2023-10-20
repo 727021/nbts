@@ -14,8 +14,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
-    "postbuild": "fix-esm-import-path dist",
+    "build": "rollup -c",
     "publish": "npm publish --access public"
   },
   "repository": {
@@ -29,8 +28,11 @@
   },
   "homepage": "https://github.com/727021/nbts#readme",
   "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.5",
     "@types/node": "^20.8.4",
-    "fix-esm-import-path": "^1.4.0",
+    "rollup": "^4.1.4",
+    "tslib": "^2.6.2",
     "typescript": "^5.2.2"
   }
 }
