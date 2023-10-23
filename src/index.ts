@@ -5,13 +5,9 @@ import * as Tag from './tags'
 import { write, writeSync } from './writer'
 
 const root = Tag.compound([
-    Tag.byte(5, 'test byte'),
-    Tag.list([
-        Tag.long(1234n),
-        Tag.long(4312n)
-    ], 'a list!')
-], '')
+    Tag.string('Bananarama', 'name')
+], 'hello world')
 
 console.log(root)
 
-await write(root, { filename: 'dist/test', format: 'snbt' })
+await write(root, { filename: 'dist/test', format: 'nbt', compress: true })
