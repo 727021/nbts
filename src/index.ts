@@ -10,4 +10,4 @@ const root = Tag.compound([
 
 console.log(root)
 
-await write(root, { filename: 'dist/test', format: 'nbt', compress: true })
+await write(root, { filename: 'dist/test', format: 'json' })

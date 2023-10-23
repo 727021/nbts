@@ -3,9 +3,6 @@
     "target": "es2022",
     "module": "es2022",
     "rootDir": "./src",
-    "paths": {
-      "~/*": ["./src/*"]
-    },
     "declaration": true,
     "outDir": "./dist",
     "esModuleInterop": true,
