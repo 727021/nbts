@@ -241,6 +241,59 @@ export const serialize = (tag: Tag): Buffer => {
     return Buffer.from([])
 }
 
-export const deserialize = (raw: Buffer): Tag => {
+export const deserialize = (buf: Buffer, offset = 0, named = true): Tag => {
+    const tag: Partial<Tag> = {}
+
+    tag.type = buf.readInt8(offset) as TagType
+    offset += 1
+
+    switch (tag.type) {
+        case TagType.BYTE: {
+            if (named) {
+                const nameLength = buf.readUInt16BE(offset)
+                offset += 2
+                tag.name = buf.subarray(offset, offset + nameLength).toString('utf-8')
+                offset += nameLength
+            }
+            tag.value = buf.readInt8(offset)
+            return tag as Tag
+        }
+        case TagType.SHORT: {
+            break
+        }
+        case TagType.INT: {
+            break
+        }
+        case TagType.LONG: {
+            break
+        }
+        case TagType.FLOAT: {
+            break
+        }
+        case TagType.DOUBLE: {
+            break
+        }
+        case TagType.BYTE_ARRAY: {
+            break
+        }
+        case TagType.STRING: {
+            break
+        }
+        case TagType.LIST: {
+            break
+        }
+        case TagType.COMPOUND: {
+            break
+        }
+        case TagType.INT_ARRAY: {
+            break
+        }
+        case TagType.LONG_ARRAY: {
+            break
+        }
+        default:
+            throw new Error(`Invalid tag type 0x${tag.type.toString(16)}`)
+    }
+
     throw new Error('Not implemented')
 }

@@ -1,13 +1,13 @@
 import { Tag, TagType } from '../util'
 
-export const serialize = (tag: Tag, level = 0): string => {
+export const serialize = (tag: Tag, indentLevel = 0): string => {
     const { type, value } = tag
     const name = tag.name !== undefined
         ? `'${tag.name}'`
-        : level === 0
+        : indentLevel === 0
             ? "''"
             : 'None'
-    const indent = new Array(level).fill('\t').join('')
+    const indent = new Array(indentLevel).fill('\t').join('')
     switch (type) {
         case TagType.BYTE:
             return `${indent}TAG_Byte(${name}): ${value}`
@@ -31,7 +31,7 @@ export const serialize = (tag: Tag, level = 0): string => {
             let str = `${indent}TAG_List(${name}): ${entries}`
             if (val.length > 0) {
                 str += `\n${indent}{`
-                    + `\n${val.map(t => serialize(t, level + 1)).join('\n')}`
+                    + `\n${val.map(t => serialize(t, indentLevel + 1)).join('\n')}`
                     + `\n${indent}}`
             } else {
                 str += ' {}'
@@ -44,7 +44,7 @@ export const serialize = (tag: Tag, level = 0): string => {
             let str = `${indent}TAG_Compound(${name}): ${entries}`
             if (val.length > 0) {
                 str += `\n${indent}{`
-                    + `\n${val.map(t => serialize(t, level + 1)).join('\n')}`
+                    + `\n${val.map(t => serialize(t, indentLevel + 1)).join('\n')}`
                     + `\n${indent}}`
             } else {
                 str += ' {}'
