@@ -10,12 +10,12 @@ module.exports = {
     ],
     parser: '@typescript-eslint/parser',
     parserOptions: {
-        project: ['./tsconfig.json', './tsconfig.eslint.json']
+        project: ['./tsconfig.json', './tsconfig.eslint.json', './tsconfig.jest.json']
     },
     plugins: ['@typescript-eslint'],
     rules: {
         'no-console': 'warn',
         '@typescript-eslint/no-explicit-any': 'warn'
     },
-    ignorePatterns: ['nano-staged.mjs', 'rollup.config.js']
+    ignorePatterns: ['nano-staged.mjs', 'rollup.config.js', 'jest.config.js']
 }
