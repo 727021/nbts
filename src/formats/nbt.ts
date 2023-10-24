@@ -1,10 +1,12 @@
-import { Tag, TagType, isValidTag, validateTag } from '../util'
+import { Tag, TagType, validateTag } from '../util'
 
 export const serialize = (tag: Tag): Buffer => {
     switch (tag.type) {
         case TagType.BYTE: {
             const named = typeof tag.name === 'string'
-            const buf = Buffer.allocUnsafe(1 + (named ? 2 + tag.name!.length : 0) + 1)
+            const buf = Buffer.allocUnsafe(
+                1 + (named ? 2 + tag.name!.length : 0) + 1
+            )
             let offset = 0
             buf.writeInt8(tag.type, offset)
             offset += 1
@@ -21,7 +23,9 @@ export const serialize = (tag: Tag): Buffer => {
         }
         case TagType.SHORT: {
             const named = typeof tag.name === 'string'
-            const buf = Buffer.allocUnsafe(1 + (named ? 2 + tag.name!.length : 0) + 2)
+            const buf = Buffer.allocUnsafe(
+                1 + (named ? 2 + tag.name!.length : 0) + 2
+            )
             let offset = 0
             buf.writeInt8(tag.type, offset)
             offset += 1
@@ -38,7 +42,9 @@ export const serialize = (tag: Tag): Buffer => {
         }
         case TagType.INT: {
             const named = typeof tag.name === 'string'
-            const buf = Buffer.allocUnsafe(1 + (named ? 2 + tag.name!.length : 0) + 4)
+            const buf = Buffer.allocUnsafe(
+                1 + (named ? 2 + tag.name!.length : 0) + 4
+            )
             let offset = 0
             buf.writeInt8(tag.type, offset)
             offset += 1
@@ -55,7 +61,9 @@ export const serialize = (tag: Tag): Buffer => {
         }
         case TagType.LONG: {
             const named = typeof tag.name === 'string'
-            const buf = Buffer.allocUnsafe(1 + (named ? 2 + tag.name!.length : 0) + 8)
+            const buf = Buffer.allocUnsafe(
+                1 + (named ? 2 + tag.name!.length : 0) + 8
+            )
             let offset = 0
             buf.writeInt8(tag.type, offset)
             offset += 1
@@ -72,7 +80,9 @@ export const serialize = (tag: Tag): Buffer => {
         }
         case TagType.FLOAT: {
             const named = typeof tag.name === 'string'
-            const buf = Buffer.allocUnsafe(1 + (named ? 2 + tag.name!.length : 0) + 4)
+            const buf = Buffer.allocUnsafe(
+                1 + (named ? 2 + tag.name!.length : 0) + 4
+            )
             let offset = 0
             buf.writeInt8(tag.type, offset)
             offset += 1
@@ -89,7 +99,9 @@ export const serialize = (tag: Tag): Buffer => {
         }
         case TagType.DOUBLE: {
             const named = typeof tag.name === 'string'
-            const buf = Buffer.allocUnsafe(1 + (named ? 2 + tag.name!.length : 0) + 8)
+            const buf = Buffer.allocUnsafe(
+                1 + (named ? 2 + tag.name!.length : 0) + 8
+            )
             let offset = 0
             buf.writeInt8(tag.type, offset)
             offset += 1
@@ -107,7 +119,9 @@ export const serialize = (tag: Tag): Buffer => {
         case TagType.BYTE_ARRAY: {
             const named = typeof tag.name === 'string'
             const val = tag.value as Buffer
-            const buf = Buffer.allocUnsafe(1 + (named ? 2 + tag.name!.length : 0) + 4 + val.length)
+            const buf = Buffer.allocUnsafe(
+                1 + (named ? 2 + tag.name!.length : 0) + 4 + val.length
+            )
             let offset = 0
             buf.writeInt8(tag.type, offset)
             offset += 1
@@ -127,7 +141,9 @@ export const serialize = (tag: Tag): Buffer => {
         case TagType.STRING: {
             const named = typeof tag.name === 'string'
             const val = tag.value as string
-            const buf = Buffer.allocUnsafe(1 + (named ? 2 + tag.name!.length : 0) + 2 + val.length)
+            const buf = Buffer.allocUnsafe(
+                1 + (named ? 2 + tag.name!.length : 0) + 2 + val.length
+            )
             let offset = 0
             buf.writeInt8(tag.type, offset)
             offset += 1
@@ -148,7 +164,9 @@ export const serialize = (tag: Tag): Buffer => {
             const named = typeof tag.name === 'string'
             const val = tag.value as Tag[]
             const tagType = val[0]?.type ?? TagType.END
-            const buf = Buffer.allocUnsafe(1 + (named ? 2 + tag.name!.length : 0) + 1 + 4)
+            const buf = Buffer.allocUnsafe(
+                1 + (named ? 2 + tag.name!.length : 0) + 1 + 4
+            )
             let offset = 0
             buf.writeInt8(tag.type, offset)
             offset += 1
@@ -164,15 +182,14 @@ export const serialize = (tag: Tag): Buffer => {
             offset += 1
             buf.writeInt32BE(val.length)
             const tagBuffers = val.map(serialize)
-            return Buffer.concat([
-                buf,
-                ...tagBuffers
-            ])
+            return Buffer.concat([buf, ...tagBuffers])
         }
         case TagType.COMPOUND: {
             const named = typeof tag.name === 'string'
             const val = tag.value as Tag[]
-            const buf = Buffer.allocUnsafe(1 + (named ? 2 + tag.name!.length : 0))
+            const buf = Buffer.allocUnsafe(
+                1 + (named ? 2 + tag.name!.length : 0)
+            )
             let offset = 0
             buf.writeInt8(tag.type, offset)
             offset += 1
@@ -194,7 +211,9 @@ export const serialize = (tag: Tag): Buffer => {
         case TagType.INT_ARRAY: {
             const named = typeof tag.name === 'string'
             const val = tag.value as number[]
-            const buf = Buffer.allocUnsafe(1 + (named ? 2 + tag.name!.length : 0) + 4 + val.length * 4)
+            const buf = Buffer.allocUnsafe(
+                1 + (named ? 2 + tag.name!.length : 0) + 4 + val.length * 4
+            )
             let offset = 0
             buf.writeInt8(tag.type)
             offset += 1
@@ -217,7 +236,9 @@ export const serialize = (tag: Tag): Buffer => {
         case TagType.LONG_ARRAY: {
             const named = typeof tag.name === 'string'
             const val = tag.value as bigint[]
-            const buf = Buffer.allocUnsafe(1 + (named ? 2 + tag.name!.length : 0) + 4 + val.length * 8)
+            const buf = Buffer.allocUnsafe(
+                1 + (named ? 2 + tag.name!.length : 0) + 4 + val.length * 8
+            )
             let offset = 0
             buf.writeInt8(tag.type)
             offset += 1
@@ -245,9 +266,9 @@ export const deserialize = (buf: Buffer): Tag => {
     let root: Tag | undefined = undefined
 
     let offset = 0
-    let stack: Tag<Tag[]>[] = []
-    let listLength: number[] = []
-    let listType: TagType[] = []
+    const stack: Tag<Tag[]>[] = []
+    const listLength: number[] = []
+    const listType: TagType[] = []
 
     while (offset < buf.length) {
         const tag: Partial<Tag> = {}
@@ -256,12 +277,13 @@ export const deserialize = (buf: Buffer): Tag => {
         tag.type = inList ? listType.at(-1)! : buf.readInt8(offset)
         if (!inList) offset += 1
 
-
         // We're not in a list, so tags should be named
         if (!inList && tag.type !== TagType.END) {
             const nameLength = buf.readUInt16BE(offset)
             offset += 2
-            tag.name = buf.subarray(offset, offset + nameLength).toString('utf-8')
+            tag.name = buf
+                .subarray(offset, offset + nameLength)
+                .toString('utf-8')
             offset += nameLength
         }
 
@@ -296,7 +318,9 @@ export const deserialize = (buf: Buffer): Tag => {
             case TagType.BYTE_ARRAY: {
                 const arrayLength = buf.readInt32BE(offset)
                 offset += 4
-                tag.value = Buffer.from(buf.subarray(offset, offset + arrayLength))
+                tag.value = Buffer.from(
+                    buf.subarray(offset, offset + arrayLength)
+                )
                 offset += arrayLength
                 break
             }
@@ -305,7 +329,7 @@ export const deserialize = (buf: Buffer): Tag => {
                 offset += 4
                 tag.value = []
                 for (let i = 0; i < arrayLength; ++i) {
-                    (tag.value as number[]).push(buf.readInt32BE(offset))
+                    ;(tag.value as number[]).push(buf.readInt32BE(offset))
                     offset += 4
                 }
                 break
@@ -315,7 +339,7 @@ export const deserialize = (buf: Buffer): Tag => {
                 offset += 4
                 tag.value = []
                 for (let i = 0; i < arrayLength; ++i) {
-                    (tag.value as bigint[]).push(buf.readBigInt64BE(offset))
+                    ;(tag.value as bigint[]).push(buf.readBigInt64BE(offset))
                     offset += 8
                 }
                 break
@@ -323,7 +347,9 @@ export const deserialize = (buf: Buffer): Tag => {
             case TagType.STRING: {
                 const stringLength = buf.readUInt16BE(offset)
                 offset += 2
-                tag.value = buf.subarray(offset, offset + stringLength).toString('utf-8')
+                tag.value = buf
+                    .subarray(offset, offset + stringLength)
+                    .toString('utf-8')
                 offset += stringLength
                 break
             }
@@ -339,7 +365,11 @@ export const deserialize = (buf: Buffer): Tag => {
                 tag.value = []
                 break
             default:
-                throw new Error(`Invalid tag type 0x${(tag.type as number).toString(16)} (${tag.type})`)
+                throw new Error(
+                    `Invalid tag type 0x${(tag.type as number).toString(16)} (${
+                        tag.type as number
+                    })`
+                )
         }
 
         // add current tag to the compound/list at the top of the stack (unless this is the root tag)
