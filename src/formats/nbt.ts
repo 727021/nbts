@@ -1,4 +1,4 @@
-import { Tag, TagType } from '../util'
+import { Tag, TagType, isValidTag, validateTag } from '../util'
 
 export const serialize = (tag: Tag): Buffer => {
     switch (tag.type) {
@@ -241,59 +241,142 @@ export const serialize = (tag: Tag): Buffer => {
     return Buffer.from([])
 }
 
-export const deserialize = (buf: Buffer, offset = 0, named = true): Tag => {
-    const tag: Partial<Tag> = {}
+export const deserialize = (buf: Buffer): Tag => {
+    let root: Tag | undefined = undefined
 
-    tag.type = buf.readInt8(offset) as TagType
-    offset += 1
+    let offset = 0
+    let stack: Tag<Tag[]>[] = []
+    let listLength: number[] = []
+    let listType: TagType[] = []
 
-    switch (tag.type) {
-        case TagType.BYTE: {
-            if (named) {
-                const nameLength = buf.readUInt16BE(offset)
+    while (offset < buf.length) {
+        const tag: Partial<Tag> = {}
+        const inList = stack.at(-1)?.type === TagType.LIST
+
+        tag.type = inList ? listType.at(-1)! : buf.readInt8(offset)
+        if (!inList) offset += 1
+
+
+        // We're not in a list, so tags should be named
+        if (!inList && tag.type !== TagType.END) {
+            const nameLength = buf.readUInt16BE(offset)
+            offset += 2
+            tag.name = buf.subarray(offset, offset + nameLength).toString('utf-8')
+            offset += nameLength
+        }
+
+        // Get value based on tag type
+        switch (tag.type) {
+            case TagType.END:
+                break
+            case TagType.BYTE:
+                tag.value = buf.readInt8(offset)
+                offset += 1
+                break
+            case TagType.SHORT:
+                tag.value = buf.readInt16BE(offset)
                 offset += 2
-                tag.name = buf.subarray(offset, offset + nameLength).toString('utf-8')
-                offset += nameLength
+                break
+            case TagType.INT:
+                tag.value = buf.readInt32BE(offset)
+                offset += 4
+                break
+            case TagType.LONG:
+                tag.value = buf.readBigInt64BE(offset)
+                offset += 8
+                break
+            case TagType.FLOAT:
+                tag.value = buf.readFloatBE(offset)
+                offset += 4
+                break
+            case TagType.DOUBLE:
+                tag.value = buf.readDoubleBE(offset)
+                offset += 8
+                break
+            case TagType.BYTE_ARRAY: {
+                const arrayLength = buf.readInt32BE(offset)
+                offset += 4
+                tag.value = Buffer.from(buf.subarray(offset, offset + arrayLength))
+                offset += arrayLength
+                break
             }
-            tag.value = buf.readInt8(offset)
-            return tag as Tag
+            case TagType.INT_ARRAY: {
+                const arrayLength = buf.readInt32BE(offset)
+                offset += 4
+                tag.value = []
+                for (let i = 0; i < arrayLength; ++i) {
+                    (tag.value as number[]).push(buf.readInt32BE(offset))
+                    offset += 4
+                }
+                break
+            }
+            case TagType.LONG_ARRAY: {
+                const arrayLength = buf.readInt32BE(offset)
+                offset += 4
+                tag.value = []
+                for (let i = 0; i < arrayLength; ++i) {
+                    (tag.value as bigint[]).push(buf.readBigInt64BE(offset))
+                    offset += 8
+                }
+                break
+            }
+            case TagType.STRING: {
+                const stringLength = buf.readUInt16BE(offset)
+                offset += 2
+                tag.value = buf.subarray(offset, offset + stringLength).toString('utf-8')
+                offset += stringLength
+                break
+            }
+            case TagType.LIST: {
+                listType.push(buf.readInt8(offset))
+                offset += 1
+                listLength.push(buf.readInt32BE(offset))
+                offset += 4
+                tag.value = []
+                break
+            }
+            case TagType.COMPOUND:
+                tag.value = []
+                break
+            default:
+                throw new Error(`Invalid tag type 0x${(tag.type as number).toString(16)} (${tag.type})`)
         }
-        case TagType.SHORT: {
-            break
+
+        // add current tag to the compound/list at the top of the stack (unless this is the root tag)
+        if (root === undefined) {
+            root = tag as Tag
+        } else if (tag.type !== TagType.END) {
+            // Ignore END tags, they don't have a value
+            stack.at(-1)!.value.push(tag as Tag)
         }
-        case TagType.INT: {
-            break
+
+        // We've reached the end of a compound tag. Pop it off the stack.
+        if (tag.type === TagType.END) {
+            stack.pop()
         }
-        case TagType.LONG: {
-            break
+
+        // handle list and compound stuff
+        if (inList) {
+            if (--listLength[listLength.length - 1] === 0) {
+                // We've reached the end of a list. Pop off.
+                listLength.pop()
+                listType.pop()
+                stack.pop()
+            }
         }
-        case TagType.FLOAT: {
-            break
+
+        if (tag.type === TagType.COMPOUND || tag.type === TagType.LIST) {
+            stack.push(tag as Tag<Tag[]>)
         }
-        case TagType.DOUBLE: {
-            break
-        }
-        case TagType.BYTE_ARRAY: {
-            break
-        }
-        case TagType.STRING: {
-            break
-        }
-        case TagType.LIST: {
-            break
-        }
-        case TagType.COMPOUND: {
-            break
-        }
-        case TagType.INT_ARRAY: {
-            break
-        }
-        case TagType.LONG_ARRAY: {
-            break
-        }
-        default:
-            throw new Error(`Invalid tag type 0x${tag.type.toString(16)}`)
     }
 
-    throw new Error('Not implemented')
+    if (stack.length) {
+        throw new Error('Unclosed tag!')
+    }
+
+    if (root == undefined) {
+        throw new Error('Something went wrong!')
+    }
+    validateTag(root, 'Invalid NBT')
+    return root
 }
