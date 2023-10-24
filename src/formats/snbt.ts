@@ -1,10 +1,10 @@
-import { Tag, TagType } from '../util'
+import { Tag, TagType, quote } from '../util'
 
 export const serialize = (tag: Tag, indentLevel = 0): string => {
     const { type, value } = tag
     const name =
         tag.name !== undefined
-            ? `'${tag.name}'`
+            ? quote(tag.name)
             : indentLevel === 0
             ? "''"
             : 'None'
@@ -29,7 +29,7 @@ export const serialize = (tag: Tag, indentLevel = 0): string => {
                 ', '
             )}]`
         case TagType.STRING:
-            return `${indent}TAG_String(${name}): '${value as string}'`
+            return `${indent}TAG_String(${name}): ${quote(value as string)}`
         case TagType.LIST: {
             const val = value as Tag[]
             const entries = `${val.length} ${

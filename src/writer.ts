@@ -1,24 +1,26 @@
-import { gzip as _gzip, gzipSync } from 'node:zlib'
-import { promisify } from 'node:util'
-import { Tag, TagType, validateTag } from './util'
 import { writeFileSync } from 'node:fs'
 import { writeFile } from 'node:fs/promises'
+import { promisify } from 'node:util'
+import { gzip as _gzip, gzipSync } from 'node:zlib'
+
+import { js, json, nbt, snbt } from './formats/index'
+import { Tag, TagType, validateTag } from './util'
+
 const gzip = promisify(_gzip)
-import { nbt, snbt, json } from './formats/index'
 
 type NBTWriteOptions = {
     filename: string
-    format?: 'nbt' | 'snbt' | 'json'
+    format?: 'nbt' | 'snbt' | 'json' | 'js'
     compress?: boolean
 }
 
-const checkExtension = (filename: string, extension: string) => filename.endsWith(extension) ? filename : `${filename}.${extension}`
+const checkExtension = (filename: string, extension: string) =>
+    filename.endsWith(extension) ? filename : `${filename}.${extension}`
 
-export const write = async (root: Tag, {
-    filename,
-    format = 'nbt',
-    compress = true
-}: NBTWriteOptions) => {
+export const write = async (
+    root: Tag,
+    { filename, format = 'nbt', compress = true }: NBTWriteOptions
+) => {
     if (root.type !== TagType.COMPOUND) {
         throw new Error()
     }
@@ -37,15 +39,17 @@ export const write = async (root: Tag, {
         case 'json':
             output = json.serialize(root)
             break
+        case 'js':
+            output = js.serialize(root)
+            break
     }
     await writeFile(checkExtension(filename, format), output)
 }
 
-export const writeSync = (root: Tag, {
-    filename,
-    format = 'nbt',
-    compress = true
-}: NBTWriteOptions) => {
+export const writeSync = (
+    root: Tag,
+    { filename, format = 'nbt', compress = true }: NBTWriteOptions
+) => {
     if (root.type !== TagType.COMPOUND) {
         throw new Error()
     }
@@ -63,6 +67,9 @@ export const writeSync = (root: Tag, {
             break
         case 'json':
             output = json.serialize(root)
+            break
+        case 'js':
+            output = js.serialize(root)
             break
     }
     writeFileSync(checkExtension(filename, format), output)

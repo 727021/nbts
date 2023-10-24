@@ -1,0 +1,29 @@
+TAG_Compound(''): 12 entries
+{
+	TAG_List('Motion'): 3 entries
+	{
+		TAG_Double(None): 0
+		TAG_Double(None): 0
+		TAG_Double(None): 0
+	}
+	TAG_Float('FallDistance'): 0
+	TAG_List('Pos'): 3 entries
+	{
+		TAG_Double(None): 0
+		TAG_Double(None): 0
+		TAG_Double(None): 0
+	}
+	TAG_Short('Health'): 20
+	TAG_Short('DeathTime'): 0
+	TAG_Short('Fire'): -20
+	TAG_Short('Air'): 300
+	TAG_Byte('OnGround'): 1
+	TAG_Short('HurtTime'): 0
+	TAG_List('Rotation'): 2 entries
+	{
+		TAG_Float(None): 164.3999481201172
+		TAG_Float(None): -63.150203704833984
+	}
+	TAG_Short('AttackTime'): 0
+	TAG_List('Inventory'): 0 entries {}
+}

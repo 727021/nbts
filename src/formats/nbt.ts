@@ -1,4 +1,4 @@
-import { Tag, TagType, validateTag } from '../util'
+import { NBTError, Tag, TagType, validateTag } from '../util'
 
 export const serialize = (tag: Tag): Buffer => {
     switch (tag.type) {
@@ -309,10 +309,16 @@ export const deserialize = (buf: Buffer): Tag => {
                 break
             case TagType.FLOAT:
                 tag.value = buf.readFloatBE(offset)
+                if (Number.isNaN(tag.value)) {
+                    tag.value = 0
+                }
                 offset += 4
                 break
             case TagType.DOUBLE:
                 tag.value = buf.readDoubleBE(offset)
+                if (Number.isNaN(tag.value)) {
+                    tag.value = 0
+                }
                 offset += 8
                 break
             case TagType.BYTE_ARRAY: {
@@ -365,11 +371,7 @@ export const deserialize = (buf: Buffer): Tag => {
                 tag.value = []
                 break
             default:
-                throw new Error(
-                    `Invalid tag type 0x${(tag.type as number).toString(16)} (${
-                        tag.type as number
-                    })`
-                )
+                throw new NBTError('Invalid tag type', { tag: tag as Tag })
         }
 
         // add current tag to the compound/list at the top of the stack (unless this is the root tag)
@@ -395,8 +397,17 @@ export const deserialize = (buf: Buffer): Tag => {
             }
         }
 
-        if (tag.type === TagType.COMPOUND || tag.type === TagType.LIST) {
+        if (tag.type === TagType.COMPOUND) {
             stack.push(tag as Tag<Tag[]>)
+        }
+        if (tag.type === TagType.LIST) {
+            if (listLength.at(-1) === 0) {
+                // Handle empty lists
+                listLength.pop()
+                listType.pop()
+            } else {
+                stack.push(tag as Tag<Tag[]>)
+            }
         }
     }
 
