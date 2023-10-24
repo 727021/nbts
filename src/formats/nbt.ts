@@ -199,7 +199,7 @@ export const serialize = (tag: Tag): Buffer => {
             buf.writeInt8(tag.type)
             offset += 1
             if (named) {
-                buf.writeUInt16BE(tag.name!.length)
+                buf.writeUInt16BE(tag.name!.length, offset)
                 offset += 2
                 if (tag.name!.length > 0) {
                     Buffer.from(tag.name!).copy(buf, offset)
@@ -222,7 +222,7 @@ export const serialize = (tag: Tag): Buffer => {
             buf.writeInt8(tag.type)
             offset += 1
             if (named) {
-                buf.writeUInt16BE(tag.name!.length)
+                buf.writeUInt16BE(tag.name!.length, offset)
                 offset += 2
                 if (tag.name!.length > 0) {
                     Buffer.from(tag.name!).copy(buf, offset)
