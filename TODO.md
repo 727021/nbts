@@ -1,0 +1,3 @@
+- [ ] Tests
+- [ ] SNBT deserializer
+- [ ] Write README
