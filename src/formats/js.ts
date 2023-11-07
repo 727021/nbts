@@ -57,7 +57,10 @@ export const serialize = (tag: Tag, indentLevel = 0): string => {
     }
 
     if (indentLevel === 0) {
-        output = "import { Tag } from '@mcstatic/nbts'\n\n" + output + '\n'
+        output =
+            "import { Tag } from '@mcstatic/nbts'\n\nconst root = " +
+            output +
+            '\n'
     }
 
     return output
