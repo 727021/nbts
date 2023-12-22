@@ -2,6 +2,9 @@ import { serialize } from '../../src/formats/js'
 import { bigTest, helloWorld, playerNanValue } from '../data/test-data'
 
 describe('javascript serializer', () => {
+    it('fails', () => {
+        expect(true).toEqual(false)
+    })
     it('serializes hello world correctly', () => {
         const result = serialize(helloWorld)
         expect(result).toMatchSnapshot()
